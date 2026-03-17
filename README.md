@@ -12,6 +12,7 @@ Minimal Express.js application used to validate the Compas agentic workflow (hum
 
 | Method | Path | Description |
 |--------|------|-------------|
+| GET | / | Landing page — project description and endpoint list |
 | GET | /api/health | Health check |
 | GET | /api/users | List all users |
 | GET | /api/users/:id | Get user by ID |
