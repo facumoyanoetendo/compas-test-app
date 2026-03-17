@@ -5,17 +5,8 @@ const router = express.Router();
 let users = [];
 let nextId = 1;
 
-// BUG: When users array is empty, this throws a TypeError instead of returning []
-// because of the faulty .map() call on undefined
 router.get('/', (req, res) => {
   const result = users.map(u => ({ id: u.id, name: u.name, email: u.email }));
-  // BUG: accidentally calling result.sort() without argument makes it work differently
-  // but when users is empty, the real bug is below:
-  if (users.length === 0) {
-    // This line causes 500: tries to access property of undefined
-    const first = users[0].name;
-    return res.json([]);
-  }
   res.json(result);
 });
 
