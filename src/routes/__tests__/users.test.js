@@ -105,4 +105,38 @@ describe('GET /api/users - pagination', () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
+
+  test('page beyond last page returns 200 with empty data array', async () => {
+    for (let i = 1; i <= 25; i++) {
+      await request(app)
+        .post('/api/users')
+        .send({ name: `User ${i}`, email: `u${i}@x.com` });
+    }
+    const res = await request(app).get('/api/users?page=999&limit=10');
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([]);
+    expect(res.body.pagination).toMatchObject({
+      page: 999,
+      limit: 10,
+      total: 25,
+      totalPages: 3,
+    });
+  });
+
+  test('limit=100 (max allowed) returns 200 and accepts the boundary value', async () => {
+    for (let i = 1; i <= 25; i++) {
+      await request(app)
+        .post('/api/users')
+        .send({ name: `User ${i}`, email: `u${i}@x.com` });
+    }
+    const res = await request(app).get('/api/users?page=1&limit=100');
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(25);
+    expect(res.body.pagination).toMatchObject({
+      page: 1,
+      limit: 100,
+      total: 25,
+      totalPages: 1,
+    });
+  });
 });
