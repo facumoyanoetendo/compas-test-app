@@ -6,8 +6,29 @@ let users = [];
 let nextId = 1;
 
 router.get('/', (req, res) => {
-  const result = users.map(u => ({ id: u.id, name: u.name, email: u.email }));
-  res.json(result);
+  const rawPage = req.query.page !== undefined ? req.query.page : '1';
+  const rawLimit = req.query.limit !== undefined ? req.query.limit : '10';
+
+  const page = Number(rawPage);
+  const limit = Number(rawLimit);
+
+  if (
+    !Number.isInteger(page) || page < 1 ||
+    !Number.isInteger(limit) || limit < 1 || limit > 100
+  ) {
+    return res.status(400).json({ error: 'Invalid pagination parameters' });
+  }
+
+  const total = users.length;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+  const start = (page - 1) * limit;
+  const slice = users.slice(start, start + limit);
+  const data = slice.map(u => ({ id: u.id, name: u.name, email: u.email }));
+
+  res.json({
+    data,
+    pagination: { page, limit, total, totalPages },
+  });
 });
 
 // GET /api/users/:id
