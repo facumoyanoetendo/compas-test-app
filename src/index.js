@@ -189,8 +189,10 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/users', usersRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
